@@ -1,0 +1,75 @@
+/*******************************************************************************
+ *
+ * Universidade Federal do Rio de Janeiro
+ * Escola Politecnica
+ * Departamento de Eletronica e de Computacao
+ * EEL270 - Computacao II - Turma 2024/1
+ * Prof. Marcelo Luiz Drumond Lanza
+ * Autor: Felipe Vasconcellos Nunes Gurgel Farias
+ *
+ * Descricao: Exibicao tamanhos combinacoes /tipos basicos/mod.sinal/mod.largura
+ *
+ * $Author: felipe.farias $
+ * $Date: 2024/04/22 03:37:39 $
+ * $Log: aula0107.c,v $
+ * Revision 1.1  2024/04/22 03:37:39  felipe.farias
+ * Initial revision
+ *
+ *
+ *******************************************************************************/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "cores.h"
+#include "aula0101.h"
+
+#define SUCESSO		0
+
+int main ()
+{
+
+	ExibirHifens (100);
+
+	printf("%sTamanhos dos Modificadores de Sinal combinados com Modificadores de Largura%s\n\n", UNDERLINE_WHITE, RESET);
+
+	
+	printf("%ssigned short:   %s \t\t\t\t\t\t\t\t\t   %lu %s %s\n",GREEN,YELLOW, sizeof(signed short), sizeof(signed short) == 1 ? "byte" : "bytes", RESET);
+	printf("%sunsigned short:  %s \t\t\t\t\t\t\t\t\t   %lu %s %s\n",GREEN,YELLOW, sizeof(unsigned short),  sizeof(unsigned short) == 1 ? "byte" : "bytes", RESET);
+	printf("%ssigned long:    %s \t\t\t\t\t\t\t\t\t   %lu %s %s\n",GREEN,YELLOW, sizeof(signed long),    sizeof(signed long) == 1 ?"byte" : "bytes", RESET);
+	printf("%sunsigned long:   %s \t\t\t\t\t\t\t\t\t   %lu %s %s\n",GREEN,YELLOW, sizeof(unsigned long), sizeof(unsigned long) == 1 ? "byte" : "bytes", RESET);
+
+
+	ExibirHifens (100);
+
+	printf("%sTamanhos dos Tipos Basicos combinados com Modificadores de Sinal%s\n\n", UNDERLINE_WHITE, RESET);
+
+	printf("%ssigned char:   %s \t\t\t\t\t\t\t\t\t   %lu %s %s \n",GREEN,YELLOW, sizeof(signed char),   sizeof(signed char) == 1 ? "byte" : "bytes", RESET);
+	printf("%sunsigned char: %s \t\t\t\t\t\t\t\t\t   %lu %s %s \n",GREEN,YELLOW, sizeof(unsigned char), sizeof(unsigned char) == 1 ? "byte" : "bytes", RESET);
+	printf("%ssigned int:   %s \t\t\t\t\t\t\t\t\t\t   %lu %s %s \n",GREEN,YELLOW, sizeof(signed int),   sizeof(signed int) == 1 ? "byte" : "bytes", RESET);
+	printf("%susigned int:   %s \t\t\t\t\t\t\t\t\t   %lu %s %s\n ",GREEN,YELLOW, sizeof(unsigned int),   sizeof(unsigned int) == 1 ? "byte" : "bytes", RESET);
+
+
+	ExibirHifens (100);
+
+	printf("%sTamanhos dos Tipos Basicos combinados com Modificadores de Largura%s\n\n", UNDERLINE_WHITE, RESET);
+
+	printf("%sshort int:   %s  \t\t\t\t\t\t\t\t\t\t   %lu %s %s\n",GREEN,YELLOW, sizeof(short int), sizeof(short int) == 1 ? "byte" : "bytes", RESET);
+	printf("%slong int:    %s  \t\t\t\t\t\t\t\t\t\t   %lu %s %s\n",GREEN,YELLOW, sizeof(long int), sizeof(long int) == 1 ? "byte" : "bytes", RESET);
+	printf("%slong double: %s  \t\t\t\t\t\t\t\t\t\t   %lu %s %s\n",GREEN,YELLOW, sizeof(long double), sizeof(long double) == 1 ? "byte" : "bytes", RESET);
+
+	ExibirHifens (100);
+
+	printf("%sTamanhos dos Tipos Basicos combinados com Modificadores de Sinal e com Modificadores de Largura%s\n\n", UNDERLINE_WHITE, RESET);
+
+	printf("%ssigned short int: %s\t\t\t\t\t\t\t\t\t   %lu %s %s \n",GREEN,YELLOW, sizeof(signed short int), sizeof(signed short int) == 1 ? "byte" : "bytes", RESET);
+	printf("%sunsigned short int: %s\t\t\t\t\t\t\t\t\t   %lu %s %s\n ",GREEN,YELLOW, sizeof(unsigned short int), sizeof(unsigned short int) == 1 ? "byte" : "bytes", RESET);
+	printf("%ssigned long int:   %s  \t\t\t\t\t\t\t\t\t   %lu %s %s\n",GREEN,YELLOW, sizeof(signed long int), sizeof(signed long int) == 1 ? "byte" : "bytes", RESET);
+	printf("%sunsigned long int:    %s  \t\t\t\t\t\t\t\t   %lu %s %s\n",GREEN,YELLOW, sizeof(unsigned long int), sizeof(unsigned long int) == 1 ? "byte" : "bytes", RESET);
+
+	ExibirHifens (100);
+
+	return SUCESSO;
+}
+
+/* $RCSfile: aula0107.c,v $ */
