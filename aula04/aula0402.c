@@ -1,0 +1,156 @@
+/*******************************************************************************
+ *
+ * Universidade Federal do Rio de Janeiro
+ * Escola Politecnica
+ * Departamento de Eletronica e de Computacao
+ * EEL270 - Computacao II - Turma 2024/1
+ * Prof. Marcelo Luiz Drumond Lanza
+ * Autor: Felipe Vasconcellos Nunes Gurgel Farias
+ *
+ * Descricao: tratamento de erros/Implementacao main/Chamada CalcularExponencial
+ *
+ * $Author: felipe.farias $
+ * $Date: 2024/05/25 23:59:25 $
+ * $Log: aula0402.c,v $
+ * Revision 1.1  2024/05/25 23:59:25  felipe.farias
+ * Initial revision
+ *
+ *
+ *******************************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <errno.h>
+#include <float.h>
+
+#include "cores.h"
+#include "aula0401.h"
+
+#define NUMERO_ARGUMENTOS				3	
+
+#define SUCESSO						0
+#define NUMERO_ARGUMENTOS_INVALIDO			4		
+#define ARGUMENTO_CARACTER_INVALIDO			5
+#define ARGUMENTO_CARACTER_HIFEN			6
+#define TAMANHO_MINIMO_DOUBLE_INFERIOR			7
+#define TAMANHO_MAXIMO_DOUBLE_EXCEDIDO			8
+#define TAMANHO_MINIMO_INT_INFERIOR			9
+#define TAMANHO_MAXIMO_INT_EXCEDIDO			10
+#define TAMANHO_MINIMO_LONG_INT_INFERIOR		11
+#define TAMANHO_MAXIMO_LONG_INT_EXCEDIDO      		12
+#define TAMANHO_MINIMO_LONG_DOUBLE_INFERIOR		13
+#define TAMANHO_MAXIMO_LONG_DOUBLE_EXCEDIDO		14
+
+
+#define END_OF_STRING					'\0'
+
+int
+main (int argc, char *argv[])
+{	
+	double basePotencia;
+	int expoentePotencia;
+	char *validacao;
+	long int numeroAuxiliarExpoente;
+	
+	ld resultadoCalcularExponencial;
+
+	/*tratamento numero de argumentos*/
+	if (argc != NUMERO_ARGUMENTOS)
+	{
+	
+		printf ("\n%sERRO: Numero de argumentos invalido! Uso:<real> <inteiro>. %s\n\n", RED, RESET);	
+		exit (NUMERO_ARGUMENTOS_INVALIDO);
+	}
+	
+	/*base*/
+		/*conversao de tipos para adequacao do problema*/	
+		basePotencia = strtod (argv[1], &validacao);	
+	
+		if (*validacao != END_OF_STRING)
+		{
+			printf("\n%sERRO: O argumento da base contem o seguinte caracter especial: (\'%c\'). Favor retirar. %s\n\n", RED, *validacao, RESET);
+			exit (ARGUMENTO_CARACTER_INVALIDO);
+	
+		}
+	
+		if (errno == ERANGE && basePotencia > 0)
+		{
+			printf("\n%sERRO: O numero da base nao pode ultrapassar o valor maximo do tipo double (limite:%e). %s\n\n", RED, DBL_MAX, RESET);
+			exit (TAMANHO_MAXIMO_DOUBLE_EXCEDIDO);
+		}
+	
+		if (errno == ERANGE && basePotencia < 0)
+		{
+			printf("\n%sERRO: O numero da base nao pode ser inferior ao valor minimo do tipo double (limite:%e). %s\n\n", RED, DBL_MIN, RESET);
+			exit (TAMANHO_MINIMO_DOUBLE_INFERIOR);
+		} 
+	
+	/*expoente*/
+		/*conversao de tipos para adequacao do problema*/	
+		numeroAuxiliarExpoente = strtol (argv[2], &validacao, 10);	
+		expoentePotencia = (int) numeroAuxiliarExpoente;
+	
+		if (*validacao != END_OF_STRING)
+		{
+			printf("\n%sERRO: O argumento do expoente digitado contem caracter especial: (\'%c\'). Favor retirar. %s\n\n", RED, *validacao, RESET);
+			exit (ARGUMENTO_CARACTER_INVALIDO);
+	
+		}
+
+		/*tratamento de limite do tipo*/
+		if (errno == ERANGE && numeroAuxiliarExpoente > 0 && numeroAuxiliarExpoente > INT_MAX)
+		{
+	
+			printf("\n%sERRO: O numero do expoente inserido ultrapassa valor maximo de conversao para o tipo long int (limite:%ld). %s\n\n", RED, LONG_MAX, RESET);
+			exit (TAMANHO_MAXIMO_LONG_INT_EXCEDIDO);
+
+		}	
+				
+		if (errno == ERANGE && numeroAuxiliarExpoente < 0 && numeroAuxiliarExpoente < INT_MIN)
+		{
+	
+			printf("\n%sERRO: O numero do expoente nao pode ser inferior ao valor minimo de conversao para o tipo long int (limite:%ld). %s\n\n", RED, LONG_MIN, RESET);
+			exit (TAMANHO_MINIMO_LONG_INT_INFERIOR);
+
+		}	
+		
+		if(numeroAuxiliarExpoente > INT_MAX)
+		{
+			printf("\n%sERRO: O numero do expoente nao pode ultrapassar o valor maximo do tipo int (limite:%d). %s\n\n", RED, INT_MAX, RESET);
+			exit (TAMANHO_MAXIMO_INT_EXCEDIDO);
+		} 
+
+		
+		if(numeroAuxiliarExpoente < INT_MIN)
+		{
+			printf("\n%sERRO: O numero do expoente nao pode ser inferior ao valor minimo do tipo int (limite:%d). %s\n\n", RED, INT_MIN, RESET);
+			exit (TAMANHO_MINIMO_INT_INFERIOR);
+		} 
+	
+	
+	resultadoCalcularExponencial = CalcularExponencial(basePotencia, expoentePotencia);
+	
+	
+	
+	if(basePotencia != 0 && resultadoCalcularExponencial > LDBL_MAX)
+	{
+		printf("\n%sERRO: O numero resultado nao pode ultrapassar o valor maximo do tipo long double (limite:%Lg). %s\n\n", RED, LDBL_MAX, RESET);
+		exit (TAMANHO_MAXIMO_LONG_DOUBLE_EXCEDIDO);
+	} 
+	
+	if(basePotencia != 0 && resultadoCalcularExponencial < LDBL_MIN)
+	{
+		printf("\n%sERRO: O numero resultado nao pode ser inferior ao valor minimo do tipo long double (limite:%Lg). %s\n\n", RED, LDBL_MIN, RESET);
+		exit (TAMANHO_MINIMO_LONG_DOUBLE_INFERIOR);
+	} 
+	
+
+	printf("\n%s%sbase ^ expoente:%s resultado %s\n", YELLOW, BLUE_BACKGROUND, RED, RESET);
+	
+	printf("\n%s%s%lf ^ %d:%s %Lf %s\n\n", YELLOW, BLUE_BACKGROUND, basePotencia, expoentePotencia, RED, resultadoCalcularExponencial, RESET);
+
+	
+	return SUCESSO;
+}
+
+/* $RCSfile: aula0402.c,v $ */

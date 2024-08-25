@@ -1,0 +1,119 @@
+/**************************************************************************************
+ *
+ * Universidade Federal do Rio de Janeiro
+ * Escola Politecnica
+ * Departamento de Eletronica e de Computacao
+ * EEL270 - Computacao II - Turma 2024/1
+ * Prof. Marcelo Luiz Drumond Lanza
+ * Autor: Felipe Vasconcellos Nunes Gurgel Farias
+ *
+ * Descricao: Implementacao do programa de testes para CalcularSerieHarmonicaAlternada
+ *
+ * $Author: felipe.farias $
+ * $Date: 2024/05/27 03:29:59 $
+ * $Log: aula0404.c,v $
+ * Revision 1.1  2024/05/27 03:29:59  felipe.farias
+ * Initial revision
+ *
+ *
+ **************************************************************************************/
+#if defined  (__FreeBSD__) && defined (__STRICT_ANSI__)
+#define __LONG_LONG_SUPPORTED
+#endif
+
+#ifdef __linux__
+#define _XOPEN_SOURCE 600
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <limits.h>
+#include <errno.h>
+#include <float.h>
+
+#include "cores.h"
+#include "aula0401.h"
+
+#define NUMERO_ARGUMENTOS				2	
+
+#define SUCESSO						0
+#define NUMERO_ARGUMENTOS_INVALIDO			3		
+#define ARGUMENTO_CARACTER_INVALIDO			4
+#define ARGUMENTO_CARACTER_HIFEN			5
+#define TAMANHO_MAXIMO_UNSIGNED_SHORT_EXCEDIDO		6
+#define TAMANHO_MAXIMO_FLOAT_EXCEDIDO			7
+#define NUMERO_TERMOS_FORA_INTERVALO			8
+
+
+#define END_OF_STRING					'\0'
+
+int
+main (int argc, char *argv[])
+{	
+	unsigned short int termoAuxiliar = 0;
+	float termoPercentual;
+	char *validacao;
+	
+	float numeroAuxiliar = 0;
+	float primeiraSerieHarmonica = 0;
+	float segundaSerieHarmonica = 0;
+
+	/*tratamento numero de argumentos*/
+	if (argc != NUMERO_ARGUMENTOS)
+	{
+	
+		printf ("\n%sERRO: Numero de argumentos invalido, Uso: <valor entre 0 e 1>. %s\n\n", RED, RESET);	
+		exit (NUMERO_ARGUMENTOS_INVALIDO);
+	}
+	
+	/*tratamento de caracteres especiais*/
+	if (argv[1][0] == '-')
+	{
+		printf ("\n%sERRO: Termo contem caractere hifen '-', Uso: <valor positivo entre 0 e 1>. %s\n\n", RED, RESET);
+		exit (ARGUMENTO_CARACTER_HIFEN);
+	}
+				
+	
+	/*conversao de tipos para adequacao do problema*/	
+	termoPercentual = strtof (argv[1], &validacao);	
+	
+	if (*validacao != END_OF_STRING)
+	{
+		printf("\n%sERRO: Caracter \'%c\' invalido, Uso: <valor entre 0 e 1>. %s\n\n", RED, *validacao, RESET);
+		exit (ARGUMENTO_CARACTER_INVALIDO);
+	
+	}
+
+	/*tratamento de limite do tipo*/
+	if(termoPercentual <= 0 || termoPercentual >= 1)
+	{
+		printf("\n%sERRO: O numero digitado esta fora da faixa limite para o calculo (0 < numero de termos < 1). %s\n\n", RED, RESET);
+		exit (NUMERO_TERMOS_FORA_INTERVALO);
+	}
+
+	
+	while(numeroAuxiliar > (termoPercentual * segundaSerieHarmonica) || segundaSerieHarmonica == 0)
+	{
+		segundaSerieHarmonica = primeiraSerieHarmonica;
+		primeiraSerieHarmonica = CalcularSerieHarmonicaAlternada(termoAuxiliar);
+
+		if(termoAuxiliar % 2 == 1)
+		{
+			printf("\nS(%hu): %.10f\n", termoAuxiliar, primeiraSerieHarmonica);
+		}
+		else
+		{
+			printf("\n%s%sS(%hu): %.10f%s\n",BLACK, WHITE_BACKGROUND, termoAuxiliar, primeiraSerieHarmonica, RESET);
+		}
+		
+		termoAuxiliar++;
+	
+		numeroAuxiliar = fabsf(primeiraSerieHarmonica - segundaSerieHarmonica);
+	}
+
+	printf("\n");
+	return SUCESSO;
+}
+ 
+/* $RCSfile: aula0404.c,v $ */
