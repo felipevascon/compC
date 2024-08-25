@@ -1,0 +1,512 @@
+head	1.7;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.7
+date	2024.06.21.17.26.13;	author felipe.farias;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2024.06.18.14.07.16;	author felipe.farias;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2024.06.17.20.49.03;	author felipe.farias;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2024.06.11.22.09.45;	author felipe.farias;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2024.06.10.01.35.14;	author felipe.farias;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2024.06.09.22.46.46;	author felipe.farias;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2024.06.01.04.04.29;	author felipe.farias;	state Exp;
+branches;
+next	;
+
+
+desc
+@implementacao da funcao ExibirMatriz
+@
+
+
+1.7
+log
+@correcao para o controle de versao para incluir determinate maior que 3
+@
+text
+@/*******************************************************************************
+ *
+ * Universidade Federal do Rio de Janeiro
+ * Escola Politecnica
+ * Departamento de Eletronica e de Computacao
+ * EEL270 - Computacao II - Turma 2024/1
+ * Prof. Marcelo Luiz Drumond Lanza
+ * Autor: Felipe Vasconcellos Nunes Gurgel Farias
+ *
+ * Descricao: implementacao das funcoes das matrizes
+ *
+ * $Author: felipe.farias $
+ * $Date: 2024/06/18 14:07:16 $
+ * $Log: aula0501.c,v $
+ * Revision 1.6  2024/06/18 14:07:16  felipe.farias
+ * inclusao da implentacao que cacula o complementar algebrico
+ *
+ * Revision 1.5  2024/06/17 20:49:03  felipe.farias
+ * inclusao da implementacao da funcao menor complementar
+ *
+ * Revision 1.4  2024/06/11 22:09:45  felipe.farias
+ * implementacao da funcao CalcularDeterminanteMatriz
+ *
+ * Revision 1.3  2024/06/10 01:35:14  felipe.farias
+ * inclusao da implementacao da funcao ObterMatrizTransposta
+ *
+ * Revision 1.2  2024/06/09 22:46:46  felipe.farias
+ * inclusao da implementacao da funcao MultiplicarMatrizes
+ *
+ * Revision 1.1  2024/06/01 04:04:29  felipe.farias
+ * Initial revision
+ *
+ *
+ *******************************************************************************/
+#include <stdio.h>
+
+#include "cores.h"
+#include "aula0501.h"
+
+
+tipoErros
+ExibirMatriz (us numeroLinhas,						/* numero de linhas matriz (E) */
+              us numeroColunas,						/* numero de colunas matriz (E) */
+              ld matriz[NUMERO_MAXIMO_LINHAS][NUMERO_MAXIMO_COLUNAS])	/* matriz (E) */
+
+{
+	
+	int contadorLinha, contadorColuna;
+	
+	if(!matriz)
+	{
+		return enderecoMatrizInvalido;
+	}
+		
+	for(contadorLinha =0;contadorLinha < numeroLinhas; contadorLinha++)
+	{
+		
+		printf("\n");
+		printf("%s|%s", BOLD_GREEN, RESET);
+		
+		for(contadorColuna = 0;contadorColuna < numeroColunas; contadorColuna++)
+		{
+			printf("%.10Lf", matriz[contadorLinha][contadorColuna]);		
+		
+				if(contadorColuna < numeroColunas - 1)
+				{
+					printf("\t");
+				}
+		
+		}
+	
+			printf("%s|%s", BOLD_GREEN, RESET);
+	}
+	
+	printf("\n\n");
+	return OK; 
+
+}
+
+
+tipoErros
+MultiplicarMatrizes (us primeiroNumeroLinhas,						/* numero linhas matriz 1 (E) */
+                     us primeiroNumeroColunas,						/* numero colunas matriz 1 (E) */
+		     us segundoNumeroLinhas,						/* numero linhas matriz 2 (E) */
+		     us segundoNumeroColunas,						/* numero colunas matriz 2 (E) */
+                     ld matrizA[NUMERO_MAXIMO_LINHAS][NUMERO_MAXIMO_COLUNAS],		/* matriz 1(E) */
+		     ld matrizB[NUMERO_MAXIMO_LINHAS][NUMERO_MAXIMO_COLUNAS],		/* matriz 2(E) */
+		     ld matrizProduto[NUMERO_MAXIMO_LINHAS][NUMERO_MAXIMO_COLUNAS])	/* matriz produto (S)*/
+
+{
+	us auxiliarMatrizA, auxiliarMatrizB, contador;
+
+
+	if ((!matrizA) || (!matrizB) || (!matrizProduto))
+	{
+		return enderecoMatrizInvalido;
+	}
+
+	for (auxiliarMatrizA = 0; auxiliarMatrizA < primeiroNumeroLinhas; auxiliarMatrizA++)
+	{
+		for (auxiliarMatrizB = 0; auxiliarMatrizB < segundoNumeroColunas; auxiliarMatrizB++)
+		{ 
+		   for(contador = 0; contador < primeiroNumeroColunas; contador++)
+		   {
+		    matrizProduto[auxiliarMatrizA][auxiliarMatrizB] = matrizProduto[auxiliarMatrizA][auxiliarMatrizB] + (matrizA[auxiliarMatrizA][contador] * matrizB[contador][auxiliarMatrizB]);
+		   }
+		}
+	}
+
+	printf("\n");
+	return OK;
+
+}
+
+
+
+
+tipoErros
+ObterMatrizTransposta (us numeroLinhas,								/* numero linhas matriz original (E) */
+                       us numeroColunas,							/* numero colunas matriz original (E) */
+                       ld matrizOriginal[NUMERO_MAXIMO_LINHAS][NUMERO_MAXIMO_COLUNAS],		/* matriz original(E) */
+		       ld matrizTransposta[NUMERO_MAXIMO_LINHAS][NUMERO_MAXIMO_COLUNAS])	/* matriz transposta (S)*/
+
+{
+
+	us primeiroContador, segundoContador;
+
+	for (primeiroContador = 0; primeiroContador < numeroColunas; primeiroContador++)
+	{ 
+
+	   for(segundoContador = 0; segundoContador < numeroLinhas; segundoContador++)
+	   {
+
+	    	matrizTransposta[segundoContador][primeiroContador] = matrizOriginal[primeiroContador][segundoContador];
+
+	   }
+
+	}
+	
+	printf("\n");
+	return OK;
+
+}
+
+
+
+
+tipoErros
+CalcularMenorComplementar (us ordemMatriz,						/* ordem da matriz (E) */
+ 		           us linhaElemento,						/* linha do elemento (E) */
+			   us colunaElemento,						/* coluna do elemento (E) */
+		      	   ld matriz[NUMERO_MAXIMO_LINHAS][NUMERO_MAXIMO_COLUNAS],	/* matriz (E) */
+		       	   ld *menorComplementar)					/* menor complementar (S) */
+
+{
+
+
+	us linhaOriginal, colunaOriginal, linhaAuxiliar, colunaAuxiliar;
+	ld matrizMenor[NUMERO_MAXIMO_LINHAS][NUMERO_MAXIMO_COLUNAS];
+
+	if(ordemMatriz - 1 == 0)
+	{
+		menorComplementar[0] = matriz[0][0];
+	}
+
+	if(linhaElemento > ordemMatriz || colunaElemento > ordemMatriz || linhaElemento == 0 || colunaElemento == 0)
+	{
+		return linhaColunaInvalida;
+	}
+
+
+	for(linhaAuxiliar = 0, linhaOriginal = 0; linhaAuxiliar < ordemMatriz - 1; linhaAuxiliar++, linhaOriginal++)
+	{
+		if(linhaAuxiliar == linhaElemento - 1)
+		{
+			linhaOriginal++;
+		}
+			
+		for(colunaAuxiliar = 0, colunaOriginal = 0; colunaAuxiliar < ordemMatriz - 1; colunaAuxiliar++, colunaOriginal++)
+		{
+
+			if(colunaAuxiliar == colunaElemento - 1)
+			{		
+				colunaOriginal++;
+			}
+
+			matrizMenor[linhaAuxiliar][colunaAuxiliar] = matriz[linhaOriginal][colunaOriginal];
+		}
+
+	}
+
+	CalcularDeterminanteMatriz(ordemMatriz - 1, matrizMenor, menorComplementar);
+	
+	return OK;
+}
+
+
+
+tipoErros
+CalcularComplementoAlgebrico (us ordemMatriz,						/* ordem da matriz (E) */
+ 		              us linhaElemento,						/* linha do elemento (E) */
+			      us colunaElemento,					/* coluna do elemento (E) */
+		      	      ld matriz[NUMERO_MAXIMO_LINHAS][NUMERO_MAXIMO_COLUNAS],	/* matriz (E) */
+		       	      ld *complementoAlgebrico)					/* complemento algebrico (S) */
+
+{
+
+	ld multiplicador;
+	ld menorComplementar[1];
+
+
+	if(linhaElemento > ordemMatriz || colunaElemento > ordemMatriz || linhaElemento == 0 || colunaElemento == 0)
+	{
+		return linhaColunaInvalida;
+	}
+
+	if((linhaElemento + colunaElemento) % 2 == 0)
+	{
+		multiplicador = 1;
+		
+	}
+
+	else
+	{
+		multiplicador = -1;
+	}
+
+	CalcularMenorComplementar (ordemMatriz, linhaElemento, colunaElemento, matriz, menorComplementar);
+	complementoAlgebrico[0] = multiplicador * menorComplementar[0];
+
+	return OK;
+}
+
+
+
+
+
+tipoErros
+CalcularDeterminanteMatriz (us ordemMatriz,						/* ordem da matriz (E) */
+              		    ld matriz[NUMERO_MAXIMO_LINHAS][NUMERO_MAXIMO_COLUNAS],	/* matriz (E) */
+              		    ld *determinante)						/* determinante (S) */
+
+
+{
+
+	us contador = 0;
+	ld resultadoDeterminante = 0;
+	ld complementoAlgebrico;
+	tipoErros determinanteRetorno;
+
+	if(ordemMatriz == 1)
+	{
+
+		*determinante = matriz[0][0];
+	}
+
+
+	if(ordemMatriz == 2)
+	{
+
+		*determinante = matriz[0][0] * matriz[1][1] - matriz[0][1] * matriz[1][0];
+	}
+
+
+	if(ordemMatriz == 3)
+	{
+
+	*determinante = matriz[0][0] * matriz[1][1] * matriz[2][2] -
+		        matriz[0][0] * matriz[1][2] * matriz[2][1] +
+		        matriz[0][1] * matriz[1][2] * matriz[2][0] -
+		        matriz[0][1] * matriz[1][0] * matriz[2][2] +
+		        matriz[0][2] * matriz[1][0] * matriz[2][1] -
+		        matriz[0][2] * matriz[1][1] * matriz[2][0] ;
+	}
+	
+
+	if(ordemMatriz > 3)
+	{
+		for(contador = 0; contador < ordemMatriz; contador++)
+		{
+		
+			determinanteRetorno = CalcularComplementoAlgebrico(ordemMatriz, 1, contador + 1, matriz, &complementoAlgebrico);
+			resultadoDeterminante += matriz[0][contador] * complementoAlgebrico;
+			if(determinanteRetorno != sucesso)
+			return determinanteRetorno;		
+		}
+
+		*determinante = resultadoDeterminante;
+	}	
+
+	return OK;
+}
+
+
+/* $RCSfile: aula0501.c,v $ */
+@
+
+
+1.6
+log
+@inclusao da implentacao que cacula o complementar algebrico
+@
+text
+@d13 1
+a13 1
+ * $Date: 2024/06/17 20:49:03 $
+d15 3
+d166 1
+a166 1
+	if(linhaElemento > ordemMatriz || colunaElemento > ordemMatriz)
+d212 1
+a212 1
+	if(linhaElemento > ordemMatriz || colunaElemento > ordemMatriz)
+d246 4
+a249 1
+	us primeiroContador, segundoContador, terceiroContador;
+d255 1
+a256 1
+	}
+d262 1
+a263 1
+	}
+d268 6
+a273 7
+		*determinante = matriz[0][0] * matriz[1][1] * matriz[2][2] +
+				matriz[0][1] * matriz[1][2] * matriz[2][0] +
+				matriz[0][2] * matriz[1][0] * matriz[2][1] -
+		 		matriz[0][2] * matriz[1][1] * matriz[2][0] -
+				matriz[0][0] * matriz[1][2] * matriz[2][1] -
+				matriz[0][1] * matriz[1][0] * matriz[2][2] ;
+
+d275 1
+d279 1
+a279 6
+		
+		ld matrizCofator[NUMERO_MAXIMO_LINHAS][NUMERO_MAXIMO_COLUNAS];
+		int sinal = 1;
+		*determinante = 0;
+
+		for(primeiroContador = 0; primeiroContador < ordemMatriz; primeiroContador++)
+a280 23
+			int primeiroAuxiliar = 0;
+			int segundoAuxiliar = 0;
+
+			for(segundoContador = 1; segundoContador < ordemMatriz; segundoContador++)
+			{
+				for(terceiroContador = 0; terceiroContador < ordemMatriz; terceiroContador++)	
+				{
+					if(terceiroContador != primeiroContador)
+					{
+
+						matrizCofator[primeiroAuxiliar][segundoAuxiliar++] = matriz[segundoContador][terceiroContador];
+						if(segundoAuxiliar == ordemMatriz - 1)
+						{
+
+							segundoAuxiliar = 0;
+							primeiroAuxiliar++;
+
+						}
+
+					}
+
+				}
+			}
+d282 5
+d288 2
+a289 6
+		}
+	
+		ld subDeterminante;
+		CalcularDeterminanteMatriz(ordemMatriz - 1, matrizCofator, &subDeterminante);
+		*determinante = -sinal;
+	}
+@
+
+
+1.5
+log
+@inclusao da implementacao da funcao menor complementar
+@
+text
+@d13 1
+a13 1
+ * $Date: 2024/06/11 22:09:45 $
+d15 3
+d205 2
+d209 4
+d214 10
+d225 2
+@
+
+
+1.4
+log
+@implementacao da funcao CalcularDeterminanteMatriz
+@
+text
+@d13 1
+a13 1
+ * $Date: 2024/06/10 01:35:14 $
+d15 3
+d152 2
+d155 4
+d160 4
+d166 22
+a189 1
+
+@
+
+
+1.3
+log
+@inclusao da implementacao da funcao ObterMatrizTransposta
+@
+text
+@d13 1
+a13 1
+ * $Date: 2024/06/09 22:46:46 $
+d15 3
+d106 3
+d135 126
+@
+
+
+1.2
+log
+@inclusao da implementacao da funcao MultiplicarMatrizes
+@
+text
+@d10 1
+a10 1
+ * Descricao: implementacao da funcao ExibirMatriz, MultiplicarMatrizes
+d13 1
+a13 1
+ * $Date: 2024/06/01 04:04:29 $
+d15 3
+d33 1
+a65 1
+
+d101 26
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d10 7
+a16 1
+ * Descricao: implementacao da funcao ExibirMatriz
+a17 3
+ * $Author$
+ * $Date$
+ * $Log$
+d64 37
+a100 1
+/* $RCSfile$ */
+@

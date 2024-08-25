@@ -1,0 +1,327 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2024.06.18.23.47.28;	author felipe.farias;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2024.06.18.14.07.16;	author felipe.farias;	state Exp;
+branches;
+next	;
+
+
+desc
+@programa de testes da funcao CalcularComplementarAlgebrico
+@
+
+
+1.2
+log
+@inclusao de nova variavel
+@
+text
+@/*******************************************************************************
+ *
+ * Universidade Federal do Rio de Janeiro
+ * Escola Politecnica
+ * Departamento de Eletronica e de Computacao
+ * EEL270 - Computacao II - Turma 2024/1
+ * Prof. Marcelo Luiz Drumond Lanza
+ * Autor: Felipe Vasconcellos Nunes Gurgel Farias
+ *
+ * Descricao: Programa de testes da funcao CalcularComplementoAlgebrico
+ *
+ * $Author: felipe.farias $
+ * $Date: 2024/06/18 14:07:16 $
+ * $Log: aula0507.c,v $
+ * Revision 1.1  2024/06/18 14:07:16  felipe.farias
+ * Initial revision
+ *
+ *
+ *******************************************************************************/
+#ifdef __linux__
+#define _XOPEN_SOURCE 600
+#endif
+
+#if defined (__FreeBSD__) && defined(__STRICT_ANSI__)
+#define __LONG_LONG_SUPPORTED
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
+#include <errno.h>
+#include <float.h>
+
+#include "cores.h"
+#include "aula0501.h"
+
+#define NUMERO_MAXIMO_ARGUMENTOS			(NUMERO_MAXIMO_LINHAS * NUMERO_MAXIMO_COLUNAS) + 4
+#define NUMERO_MINIMO_ARGUMENTOS			4
+#define NUMERO_ARGUMENTOS_INVALIDO			1
+
+
+#define NUMERO_PARAMETRO_NEGATIVO			3 
+#define NUMERO_PARAMETRO_ZERO				4
+#define NUMERO_PARAMETRO_MAXIMO				5
+#define PARAMETRO_INVALIDO				6
+#define CARACTER_ESPECIAL_INVALIDO			7
+#define TAMANHO_MAXIMO_UNSIGNED_LONG_EXCEDIDO		8
+#define TAMANHO_MAXIMO_UNSIGNED_SHORT_EXCEDIDO		9
+#define BASE_DECIMAL					10
+#define NUMERO_INDICES_MATRIZ_INVALIDO			11
+#define CARACTER_INDICES_MATRIZ_INVALIDO		12
+#define TAMANHO_MAXIMO_LONG_DOUBLE_EXCEDIDO		13
+#define TAMANHO_MINIMO_LONG_DOUBLE_INFERIOR		14
+
+#define END_OF_STRING					'\0'
+
+int
+main (int argc, char **argv)
+{	
+	
+	unsigned long long numeroArgumentosMatriz, parametrosMatrizTerminal;
+	unsigned long int ordemMatrizAuxiliar, indiceLinhasAuxiliar, indiceColunasAuxiliar;
+
+	us indiceLinhas, indiceColunas, ordemMatriz, indiceArgumentoTerminal, indiceArgumentoLinhas, indiceArgumentoColunas;
+ 	ld matriz[NUMERO_MAXIMO_LINHAS][NUMERO_MAXIMO_COLUNAS], argumentoMatrizTerminal;
+	ld complementoAlgebrico[1];
+	char *validacao;
+	unsigned char resultadoComplementoAlgebrico;
+
+	/* NUMERO DE ARGUMENTOS DA MATRIZ CALCULAR COMPLEMENTO ALGEBRICO NO TERMINAL */
+
+	if (argc < NUMERO_MINIMO_ARGUMENTOS || argc > NUMERO_MAXIMO_ARGUMENTOS)
+	{
+		printf("\n%sERRO: Numero de argumentos invalido! \nModelo de uso:<OrdemMatriz> <indice do menor complementar> <a11> .. <a1n> <a21> .. <a2n> <aX1> .. <aXn>. %s\n\n", RED, RESET);	
+		exit (NUMERO_ARGUMENTOS_INVALIDO);
+	}
+
+	/* TRATAMENTO VALORES NEGATIVOS DOS PARAMETROS */
+
+	if (argv[1][0] == '-' || argv[2][0] == '-' || argv[3][0] == '-')
+	{
+		printf("\n%sERRO: Os parametros da matriz ordem, indice linha e indice coluna, respectivamente no terminal, nao podem ser negativos, retire o hifen '-' ! %s\n\n", RED, RESET);	
+		exit (NUMERO_PARAMETRO_NEGATIVO);
+	}		
+
+	/* TRATAMENTO DA ORDEM DA MATRIZ */
+
+	ordemMatrizAuxiliar = strtoul(argv[1], &validacao, BASE_DECIMAL);
+
+	if(errno == ERANGE)
+	{
+		printf("\n%sERRO: O parametro ordem da matriz nao deve ultrapassar o limite maximo de conversao do tipo unsigned long int (%lu)! %s\n\n", RED, ULONG_MAX, RESET);
+		exit (TAMANHO_MAXIMO_UNSIGNED_LONG_EXCEDIDO);
+	}
+
+	if(*validacao != END_OF_STRING)
+	{
+
+		printf("\n%sERRO: Caracter especial (\'%c\') invalido identificado no parametro ordem da matriz, Retire-o! %s\n\n", RED, *validacao, RESET);
+		exit (CARACTER_ESPECIAL_INVALIDO);
+	}
+
+	ordemMatriz = (us) ordemMatrizAuxiliar; 
+
+	if(ordemMatrizAuxiliar == 0)
+	{
+		printf("\n%sERRO: O parametro ordem da matriz nao pode ser zero, favor inserir apenas numeros maiores do que zero! %s\n\n", RED, RESET);	
+		exit (NUMERO_PARAMETRO_ZERO);
+	}
+
+	if(ordemMatrizAuxiliar > NUMERO_MAXIMO_LINHAS && ordemMatrizAuxiliar < USHRT_MAX)
+	{	
+		printf("\n%sERRO: O parametro ordem da matriz nao pode ultrapassar o limite maximo 100 por conta do limite maximo de linhas(%u) e colunas(%u)!%s\n\n", RED, NUMERO_MAXIMO_LINHAS, NUMERO_MAXIMO_COLUNAS,RESET);	
+		exit (NUMERO_PARAMETRO_MAXIMO);
+	}
+
+	if(ordemMatrizAuxiliar > USHRT_MAX)
+	{
+		printf("\n%sERRO: O parametro ordem da matriz nao pode ultrapassar o limite maximo do tipo unsigned short (limite:%u)! %s\n\n", RED, USHRT_MAX, RESET);
+		exit (TAMANHO_MAXIMO_UNSIGNED_SHORT_EXCEDIDO);
+	}	
+
+
+	/* TRATAMENTO DO INDICE LINHA DO ELEMENTO DA MATRIZ */
+
+	indiceLinhasAuxiliar = strtoul(argv[2], &validacao, BASE_DECIMAL);
+
+	if(errno == ERANGE)
+	{
+		printf("\n%sERRO: O parametro indice linha do elemento da matriz nao deve ultrapassar o limite maximo de conversao do tipo unsigned long int (%lu)! %s\n\n", RED, ULONG_MAX, RESET);
+		exit (TAMANHO_MAXIMO_UNSIGNED_LONG_EXCEDIDO);
+	}
+
+	if(*validacao != END_OF_STRING)
+	{
+		printf("\n%sERRO: Caracter especial (\'%c\') invalido identificado no parametro indice linha da matriz, Retire-o! %s\n\n", RED, *validacao, RESET);
+		exit (CARACTER_ESPECIAL_INVALIDO);
+	}
+
+	indiceLinhas = (us) indiceLinhasAuxiliar;
+
+	if(indiceLinhasAuxiliar == 0)
+	{
+		printf("\n%sERRO: O parametro indice linha do elemento da matriz nao pode ser zero, favor inserir numeros positivos diferentes de zero! %s\n\n", RED, RESET);	
+		exit (NUMERO_PARAMETRO_ZERO);
+	}
+
+	if(indiceLinhasAuxiliar > NUMERO_MAXIMO_LINHAS && indiceLinhasAuxiliar < USHRT_MAX)
+	{	
+	printf("\n%sERRO: O parametro indice linha do elemento da matriz nao pode ultrapassar o limite maximo exigido pelo programa (limite = %u)!%s\n\n", RED, NUMERO_MAXIMO_LINHAS, RESET);	
+	exit (NUMERO_PARAMETRO_MAXIMO);
+	}
+
+	if(indiceLinhasAuxiliar > USHRT_MAX)
+	{
+		printf("\n%sERRO: O parametro indice linha do elemento da matriz nao pode ultrapassar o limite maximo do tipo unsigned short (limite:%u)! %s\n\n", RED, USHRT_MAX, RESET);
+		exit (TAMANHO_MAXIMO_UNSIGNED_SHORT_EXCEDIDO);
+	}	
+
+
+	/* TRATAMENTO DO INDICE COLUNA DO ELEMENTO DA MATRIZ */
+
+	indiceColunasAuxiliar = strtoul(argv[3], &validacao, BASE_DECIMAL);
+
+	if(errno == ERANGE)
+	{
+		printf("\n%sERRO: O parametro indice coluna da matriz nao deve ultrapassar o limite maximo de conversao do tipo unsigned long int (%lu)! %s\n\n", RED, ULONG_MAX, RESET);
+		exit (TAMANHO_MAXIMO_UNSIGNED_LONG_EXCEDIDO);
+	}
+
+	if(*validacao != END_OF_STRING)
+	{
+
+		printf("\n%sERRO: Caractere especial (\'%c\') invalido identificado no parametro indice coluna da matriz, Retire-o! %s\n\n", RED, *validacao, RESET);
+		exit (CARACTER_ESPECIAL_INVALIDO);
+	}
+
+	indiceColunas = (us) indiceColunasAuxiliar; 
+
+	if(indiceColunasAuxiliar == 0)
+	{
+		printf("\n%sERRO: O parametro indice coluna do elemento da matriz deve ser positivo e maior do que zero! %s\n\n", RED, RESET);	
+		exit (NUMERO_PARAMETRO_ZERO);
+
+	}
+
+	if(indiceColunasAuxiliar > NUMERO_MAXIMO_COLUNAS && indiceColunasAuxiliar < USHRT_MAX)
+	{	
+	printf("\n%sERRO: O parametro indice coluna do elemento da matriz nao pode ultrapassar o limite maximo exigido pelo programa (limite = %u)!%s\n\n", RED, NUMERO_MAXIMO_COLUNAS, RESET);	
+	exit (NUMERO_PARAMETRO_MAXIMO);
+	}
+
+	if(indiceColunasAuxiliar > USHRT_MAX)
+	{
+
+		printf("\n%sERRO: O parametro indice coluna do elemento da matriz nao pode ultrapassar o limite maximo do tipo unsigned short (limite:%u)! %s\n\n", RED, USHRT_MAX, RESET);
+		exit (TAMANHO_MAXIMO_UNSIGNED_SHORT_EXCEDIDO);
+	}	
+
+
+	/* INDICES DA MATRIZ QUE SERA USADA PARA CALCULAR O COMPLEMENTO ALGEBRICO */
+
+	parametrosMatrizTerminal = argc - NUMERO_MINIMO_ARGUMENTOS;
+
+	numeroArgumentosMatriz = (ordemMatriz * ordemMatriz);
+	
+	if(parametrosMatrizTerminal != numeroArgumentosMatriz)
+	{
+		printf("\n%sERRO: Total de indices esperados para a matriz = (ordem^2) = (%llu) supera o numero de indices da matriz digitados no terminal (%llu)!%s\n\n", RED, numeroArgumentosMatriz, parametrosMatrizTerminal, RESET);
+		exit (NUMERO_INDICES_MATRIZ_INVALIDO);
+	}
+
+	indiceArgumentoTerminal = NUMERO_MINIMO_ARGUMENTOS;
+
+
+	for(indiceArgumentoLinhas = 0; indiceArgumentoLinhas < ordemMatriz; indiceArgumentoLinhas++)
+	{
+		
+		for (indiceArgumentoColunas = 0; indiceArgumentoColunas < ordemMatriz; indiceArgumentoColunas++)
+		{
+			argumentoMatrizTerminal = strtold (argv[indiceArgumentoTerminal], &validacao);
+		
+			if(errno == ERANGE && argumentoMatrizTerminal > 0)
+			{
+				printf("\n%sERRO: Algum indice da matriz ultrapassa o limite maximo do tipo long double (%Lg)!%s\n\n", RED, LDBL_MAX, RESET);	
+				exit (TAMANHO_MAXIMO_LONG_DOUBLE_EXCEDIDO);
+			}
+
+			if(errno == ERANGE && argumentoMatrizTerminal < 0)
+			{
+				printf("\n%sERRO: Algum indice da matriz ultrapassa o limite minimo do tipo long double (%Lg)!%s\n\n", RED, LDBL_MIN, RESET);	
+				exit (TAMANHO_MINIMO_LONG_DOUBLE_INFERIOR);
+			}
+
+			if(*validacao != END_OF_STRING)
+			{
+				printf("\n%sERRO: Algum argumento dos indices da matriz esta com caractere invalido! Retire o (\'%c\'). %s\n\n", RED, *validacao, RESET);
+				exit (CARACTER_INDICES_MATRIZ_INVALIDO);
+			}
+	
+			matriz [indiceArgumentoLinhas][indiceArgumentoColunas] = argumentoMatrizTerminal;
+			indiceArgumentoTerminal++;
+	
+		}
+	}
+
+	resultadoComplementoAlgebrico = CalcularComplementoAlgebrico (ordemMatriz, indiceLinhas, indiceColunas, matriz, complementoAlgebrico);
+	
+	if (resultadoComplementoAlgebrico == linhaColunaInvalida)
+	{
+		printf("\n%sERRO: O numero de linha e/ou coluna nao pode ser maior do que o numero da ordem da matriz!%s\n\n", RED, RESET);	
+		exit (PARAMETRO_INVALIDO);
+	}
+
+	ExibirMatriz (ordemMatriz, ordemMatriz, matriz);
+
+	printf("%sIndice referencia para calcular complemento algebrico: a[%hu][%hu] =%s %.5Lf\n", GREEN, (us)indiceLinhas, (us)indiceColunas, RESET, matriz[indiceLinhas - 1][indiceColunas - 1]);
+	printf("\n%sComplemento Algebrico =%s %.5Lf\n\n", GREEN, RESET, complementoAlgebrico[0]);
+	
+	
+	return OK;
+}
+/* $RCSfile: aula0507.c,v $ */
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d12 6
+a17 3
+ * $Author$
+ * $Date$
+ * $Log$
+d65 1
+a65 1
+	us indiceLinhas, indiceColunas, indiceArgumentoTerminal, ordemMatriz;
+d217 1
+a217 1
+	for(indiceLinhas = 0; indiceLinhas < ordemMatriz; indiceLinhas++)
+d220 1
+a220 1
+		for (indiceColunas = 0; indiceColunas < ordemMatriz; indiceColunas++)
+d242 1
+a242 1
+			matriz [indiceLinhas][indiceColunas] = argumentoMatrizTerminal;
+d248 1
+a248 1
+	resultadoComplementoAlgebrico = CalcularComplementoAlgebrico (ordemMatriz, indiceLinhasAuxiliar, indiceColunasAuxiliar, matriz, complementoAlgebrico);
+d258 1
+a258 1
+	printf("%sIndice referencia para calcular complemento algebrico: a[%hu][%hu] =%s %.5Lf\n", GREEN, (us)indiceLinhasAuxiliar, (us)indiceColunasAuxiliar, RESET, matriz[indiceLinhasAuxiliar - 1][indiceColunasAuxiliar - 1]);
+d264 1
+a264 1
+/* $RCSfile$ */
+@

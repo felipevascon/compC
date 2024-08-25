@@ -1,0 +1,95 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2024.05.05.18.35.25;	author felipe.farias;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2024.05.04.19.59.03;	author felipe.farias;	state Exp;
+branches;
+next	;
+
+
+desc
+@Implementacao MDC usando do..while
+@
+
+
+1.2
+log
+@correcao do tipo da variavel NumeroAuxiliar
+@
+text
+@/*******************************************************************************
+ *
+ * Universidade Federal do Rio de Janeiro
+ * Escola Politecnica
+ * Departamento de Eletronica e de Computacao
+ * EEL270 - Computacao II - Turma 2024/1
+ * Prof. Marcelo Luiz Drumond Lanza
+ * Autor: Felipe Vasconcellos Nunes Gurgel Farias
+ *
+ * Descricao: Implementacao da funcao CalcularMaximoDivisorComum com do..while 
+ *
+ * $Author: felipe.farias $
+ * $Date: 2024/05/04 19:59:03 $
+ * $Log: aula0201b.c,v $
+ * Revision 1.1  2024/05/04 19:59:03  felipe.farias
+ * Initial revision
+ *
+ *
+ *******************************************************************************/
+
+#include <stdio.h>
+#include "aula0201.h"
+
+ull
+CalcularMaximoDivisorComum (ull primeiroNumero, ull segundoNumero)
+{
+	ull numeroAuxiliar;
+	do
+	{
+		if(segundoNumero == 0)
+		{
+			return primeiroNumero;
+		}
+		else
+		{
+			numeroAuxiliar = segundoNumero;
+			segundoNumero = primeiroNumero % segundoNumero;
+			primeiroNumero = numeroAuxiliar;
+		}
+	}
+	while (segundoNumero != 0);
+
+	return primeiroNumero;
+
+
+}
+/* $RCSfile: aula0201b.c,v $ */
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d12 6
+a17 3
+ * $Author$
+ * $Date$
+ * $Log$
+d27 1
+a27 1
+	int numeroAuxiliar;
+d47 1
+a47 1
+/* $RCSfile$ */
+@

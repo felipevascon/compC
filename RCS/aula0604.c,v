@@ -1,0 +1,192 @@
+head	1.2;
+access;
+symbols;
+locks
+	felipe.farias:1.2; strict;
+comment	@ * @;
+
+
+1.2
+date	2024.07.24.03.33.59;	author felipe.farias;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2024.07.24.00.28.22;	author felipe.farias;	state Exp;
+branches;
+next	;
+
+
+desc
+@implementacao da funcao rg utilizando string
+@
+
+
+1.2
+log
+@implementacao funcao validarRg com string
+@
+text
+@/*******************************************************************************
+ *
+ * Universidade Federal do Rio de Janeiro
+ * Escola Politecnica
+ * Departamento de Eletronica e de Computacao
+ * EEL270 - Computacao II - Turma 2024/1
+ * Prof. Marcelo Luiz Drumond Lanza
+ * Autor: Felipe Vasconcellos Nunes Gurgel Farias
+ *
+ * Descricao: implementacao das funcoes do RG substituindo bytes por string
+ *
+ * $Author: felipe.farias $
+ * $Date: 2024/07/24 00:28:22 $
+ * $Log: aula0604.c,v $
+ * Revision 1.1  2024/07/24 00:28:22  felipe.farias
+ * Initial revision
+ *
+ *
+ *******************************************************************************/
+#include <string.h>
+
+#include "aula0604.h"
+
+#define END_OF_STRING	'\0'
+
+tipoErros
+GerarDigitosVerificadoresRg (char *entradaNumeroRg, char *saidaDigitoVerificador)
+
+{
+	us contadorRg, resto, digitoVerificador;
+	us peso = 2;
+	us soma = 0;
+
+	if(!entradaNumeroRg || !saidaDigitoVerificador)
+	{
+		return argumentoRgInvalido;
+	}
+
+	for(contadorRg = 0; contadorRg < COMPRIMENTO_RG + 2; contadorRg++)
+	{
+		if(entradaNumeroRg[contadorRg] == '.')
+		{
+			contadorRg++;
+		}
+
+		if(entradaNumeroRg[contadorRg] < '0' || entradaNumeroRg[contadorRg] > '9')
+		{
+			return comprimentoRgInvalido;
+		}
+
+		soma += ((us) entradaNumeroRg[contadorRg] - '0') * peso;
+		peso++;
+	}
+	
+	resto = (soma % 11);
+	digitoVerificador = (11 - resto);
+
+	if(digitoVerificador == 10)
+	{
+	
+		*saidaDigitoVerificador = 'X';
+
+	}
+
+	else if(digitoVerificador == 11)
+	{
+
+		*saidaDigitoVerificador = '0';
+
+	}
+
+	else
+	{
+
+		*saidaDigitoVerificador = (digitoVerificador + '0');
+
+	}
+
+	return sucesso;
+
+}
+
+
+
+tipoErros
+ValidarRg (char *validarNumeroRg /* entrada*/)
+
+{
+
+	us contadorRg;
+	tipoErros resultadoDigitoVerificadorRg;
+	char validacao;
+	char entradaNumeroRg[COMPRIMENTO_RG + DIGITO_VERIFICADOR + 3];
+
+	if(!validarNumeroRg)
+	{
+		return argumentoRgInvalido;
+	}
+
+	if(strlen(validarNumeroRg) != COMPRIMENTO_RG + DIGITO_VERIFICADOR + 3)
+	{
+		return comprimentoRgInvalido;
+	}
+
+
+	for(contadorRg = 0; contadorRg < COMPRIMENTO_RG + 2; contadorRg++)
+	{
+		entradaNumeroRg[contadorRg] = validarNumeroRg[contadorRg];
+	}	
+
+	entradaNumeroRg[COMPRIMENTO_RG + 2] = END_OF_STRING;
+
+	resultadoDigitoVerificadorRg = GerarDigitosVerificadoresRg(entradaNumeroRg, &validacao);
+
+	if(resultadoDigitoVerificadorRg != sucesso)
+	{
+		return resultadoDigitoVerificadorRg;
+	}
+
+	if(validacao != validarNumeroRg[COMPRIMENTO_RG + DIGITO_VERIFICADOR + 2])
+	{
+		return gerarDigitoVerificadorInvalido;
+	}
+
+	return sucesso;
+
+}
+
+
+/* $RCSfile: aula0604.c,v $ */
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d12 6
+a17 3
+ * $Author$
+ * $Date$
+ * $Log$
+d20 2
+d93 1
+a93 1
+	char entradaNumeroRg[12];
+d99 2
+a100 2
+/*
+	if(strlen(validarNumeroRg) != 12)
+d104 1
+a104 1
+*/
+d111 1
+a111 1
+	entradaNumeroRg[10] = END_OF_STRING;
+a119 1
+
+d130 1
+a130 1
+/* $RCSfile$ */
+@

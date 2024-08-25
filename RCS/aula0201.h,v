@@ -1,0 +1,55 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2024.05.04.16.52.42;	author felipe.farias;	state Exp;
+branches;
+next	;
+
+
+desc
+@DEFINICAO DO TIPO E PROTOTIPO DA FUNCAO CalcularMaximoDivisorComum
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@/*******************************************************************************
+ *
+ * Universidade Federal do Rio de Janeiro
+ * Escola Politecnica
+ * Departamento de Eletronica e de Computacao
+ * EEL270 - Computacao II - Turma 2024/1
+ * Prof. Marcelo Luiz Drumond Lanza
+ * Autor: Felipe Vasconcellos Nunes Gurgel Farias
+ *
+ * Descricao: Definicao de tipos e prototipos da funcoes
+ *
+ * $Author$
+ * $Date$
+ * $Log$
+ *
+ *******************************************************************************/
+
+#ifndef AULA0201
+#define AULA0201				"@@(#)aula0201.h $Revision$"
+
+typedef unsigned long long ull;
+
+ull
+CalcularMaximoDivisorComum (ull, ull);
+
+
+#endif
+
+
+
+/* $RCSfile$ */
+@

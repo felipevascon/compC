@@ -1,0 +1,266 @@
+head	1.3;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2024.06.21.17.26.13;	author felipe.farias;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2024.06.21.02.42.15;	author felipe.farias;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2024.06.11.22.09.45;	author felipe.farias;	state Exp;
+branches;
+next	;
+
+
+desc
+@programa de testes para a funcao CalcularDeterminanteMatriz
+@
+
+
+1.3
+log
+@correcao de saida para a funcao
+@
+text
+@/*************************************************************************************
+ *
+ * Universidade Federal do Rio de Janeiro
+ * Escola Politecnica
+ * Departamento de Eletronica e de Computacao
+ * EEL270 - Computacao II - Turma 2024/1
+ * Prof. Marcelo Luiz Drumond Lanza
+ * Autor: Felipe Vasconcellos Nunes Gurgel Farias
+ *
+ * Descricao: Programa de testes/main para a funcao CalcularDeterminanteMatriz
+ *
+ * $Author: felipe.farias $
+ * $Date: 2024/06/21 02:42:15 $
+ * $Log: aula0505.c,v $
+ * Revision 1.2  2024/06/21 02:42:15  felipe.farias
+ * correcao de validacao desnecessaria
+ *
+ * Revision 1.1  2024/06/11 22:09:45  felipe.farias
+ * Initial revision
+ *
+ *
+ ************************************************************************************/
+#ifdef __linux__
+#define _XOPEN_SOURCE 600
+#endif
+
+#if defined (__FreeBSD__) && defined(__STRICT_ANSI__)
+#define __LONG_LONG_SUPPORTED
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
+#include <errno.h>
+#include <float.h>
+
+#include "cores.h"
+#include "aula0501.h"
+
+#define NUMERO_MINIMO_ARGUMENTOS			2
+#define NUMERO_ARGUMENTOS_INVALIDO			1
+
+
+#define NUMERO_ORDEM_NEGATIVO				3 
+#define NUMERO_ORDEM_ZERO				4
+#define NUMERO_MAXIMO_ORDEM				5
+#define CARACTER_ESPECIAL_ORDEM_INVALIDO		6
+#define TAMANHO_MAXIMO_UNSIGNED_LONG_EXCEDIDO		7
+#define TAMANHO_MAXIMO_UNSIGNED_SHORT_EXCEDIDO		8
+#define BASE_DECIMAL					10
+#define NUMERO_INDICES_MATRIZ_INVALIDO			11
+#define CARACTER_INDICES_MATRIZ_INVALIDO		12
+#define TAMANHO_MAXIMO_LONG_DOUBLE_EXCEDIDO		13
+#define TAMANHO_MINIMO_LONG_DOUBLE_INFERIOR		14
+#define DETERMINANTE_INVALIDO				15
+
+#define END_OF_STRING					'\0'
+
+int
+main (int argc, char **argv)
+{	
+	
+	unsigned long long numeroArgumentosMatriz, parametrosMatrizTerminal;
+	unsigned long int ordemDeterminanteAuxiliar;
+
+	us indiceLinhas, indiceColunas, indiceArgumentoTerminal, ordemMatriz;
+ 	ld matriz[NUMERO_MAXIMO_LINHAS][NUMERO_MAXIMO_COLUNAS], argumentoMatrizTerminal, resultadoDeterminante;
+	tipoErros resultado;
+	char *validacao;
+
+
+	/* NUMERO DE ARGUMENTOS MATRIZ DETERMINANTE NO TERMINAL */
+
+	if (argc <= NUMERO_MINIMO_ARGUMENTOS)
+	{
+		printf("\n%sERRO: Numero de argumentos invalido! \nModelo de uso:<OrdemMatriz> <a11> .. <a1n> <a21> .. <a2n> <aX1> .. <aXn>. %s\n\n", RED, RESET);	
+		exit (NUMERO_ARGUMENTOS_INVALIDO);
+	}
+
+	/* TRATAMENTO DO VALOR ORDEM DA MATRIZ DETERMINANTE */
+
+	if (argv[1][0] == '-')
+	{
+		printf("\n%sERRO: A ordem da matriz determinante nao pode ser negativa, retire o hifen '-' ! %s\n\n", RED, RESET);	
+		exit (NUMERO_ORDEM_NEGATIVO);
+	}		
+
+	ordemDeterminanteAuxiliar = strtoul(argv[1], &validacao, BASE_DECIMAL);
+
+	if(errno == ERANGE)
+	{
+			
+		printf("\n%sERRO: A ordem da matriz nao deve ultrapassar o limite maximo de conversao do tipo unsigned long int (%lu)! %s\n\n", RED, ULONG_MAX, RESET);
+		exit (TAMANHO_MAXIMO_UNSIGNED_LONG_EXCEDIDO);
+	}
+
+	if(*validacao != END_OF_STRING)
+	{
+		printf("\n%sERRO: Caracteres especiais sao invalidos! Retire o (\'%c\')! %s\n\n", RED, *validacao, RESET);
+		exit (CARACTER_ESPECIAL_ORDEM_INVALIDO);
+	}
+
+	ordemMatriz = (us) ordemDeterminanteAuxiliar;
+
+	if(ordemDeterminanteAuxiliar == 0)
+	{
+		printf("\n%sERRO: Digite valores maiores do que zero para o argumento referente a ordem da matriz determinante! %s\n\n", RED, RESET);	
+		exit (NUMERO_ORDEM_ZERO);
+	}
+
+	if(ordemDeterminanteAuxiliar > NUMERO_MAXIMO_LINHAS && ordemDeterminanteAuxiliar < USHRT_MAX)
+	{	
+	printf("\n%sERRO: Ordem da matriz nao pode ser maior do que 100 por conta do limite de linhas(%u) e colunas(%u)!%s\n\n", RED, NUMERO_MAXIMO_LINHAS, NUMERO_MAXIMO_COLUNAS, RESET);	
+	exit (NUMERO_MAXIMO_ORDEM);
+	}
+
+	if(ordemDeterminanteAuxiliar > USHRT_MAX)
+	{
+		printf("\n%sERRO: Ordem da matriz nao deve ultrapassar o limite maximo do tipo unsigned short (limite:%u)! %s\n\n", RED, USHRT_MAX, RESET);
+		exit (TAMANHO_MAXIMO_UNSIGNED_SHORT_EXCEDIDO);
+	}	
+
+
+	/* INDICES DA MATRIZ DETERMINANTE */
+
+	parametrosMatrizTerminal = argc - NUMERO_MINIMO_ARGUMENTOS;
+
+	numeroArgumentosMatriz = ordemMatriz * ordemMatriz;
+	
+	if(numeroArgumentosMatriz != parametrosMatrizTerminal)
+	{
+		printf("\n%sERRO: (ordem^2) = <Linha,Coluna> = (%llu) supera o numero de indices da matriz digitados no terminal (%llu)!%s\n\n", RED, numeroArgumentosMatriz, parametrosMatrizTerminal, RESET);
+		exit (NUMERO_INDICES_MATRIZ_INVALIDO);
+	}
+
+	indiceArgumentoTerminal = NUMERO_MINIMO_ARGUMENTOS;
+
+
+	for(indiceLinhas = 0; indiceLinhas < ordemMatriz; indiceLinhas++)
+	{
+		
+		for (indiceColunas = 0; indiceColunas < ordemMatriz; indiceColunas++)
+		{
+			argumentoMatrizTerminal = strtold (argv[indiceArgumentoTerminal], &validacao);
+		
+			if(errno == ERANGE && argumentoMatrizTerminal > 0)
+			{
+				printf("\n%sERRO: Algum indice da matriz ultrapassa o limite maximo do tipo long double (%Lg)!%s\n\n", RED, LDBL_MAX, RESET);	
+				exit (TAMANHO_MAXIMO_LONG_DOUBLE_EXCEDIDO);
+			}
+
+			if(errno == ERANGE && argumentoMatrizTerminal < 0)
+			{
+				printf("\n%sERRO: Algum indice da matriz ultrapassa o limite minimo do tipo long double (%Lg)!%s\n\n", RED, LDBL_MIN, RESET);	
+				exit (TAMANHO_MINIMO_LONG_DOUBLE_INFERIOR);
+			}
+
+			if(*validacao != END_OF_STRING)
+			{
+				printf("\n%sERRO: Algum argumento dos indices da matriz esta com caractere invalido! Retire o (\'%c\'). %s\n\n", RED, *validacao, RESET);
+				exit (CARACTER_INDICES_MATRIZ_INVALIDO);
+			}
+	
+			matriz [indiceLinhas][indiceColunas] = argumentoMatrizTerminal;
+			indiceArgumentoTerminal++;
+	
+		}
+	}
+
+	
+
+	resultado = CalcularDeterminanteMatriz (ordemMatriz, matriz, &resultadoDeterminante);
+	
+	if(resultado != sucesso)
+	{
+		printf("\n%sErro ao executar a funcao calcular a determinante (erro numero: %u)%s\n", RED, resultado, RESET);
+		exit (DETERMINANTE_INVALIDO);
+	}
+
+	printf("\n%sMatriz: %s\n", GREEN, RESET);
+	ExibirMatriz (ordemMatriz, ordemMatriz, matriz);
+
+	printf("%sDeterminante:%s %.5Lf\n\n", GREEN, RESET, resultadoDeterminante);
+
+	return OK;
+}
+/* $RCSfile: aula0505.c,v $ */
+@
+
+
+1.2
+log
+@correcao de validacao desnecessaria
+@
+text
+@d13 1
+a13 1
+ * $Date: 2024/06/11 22:09:45 $
+d15 3
+d56 1
+d69 1
+d171 9
+a179 1
+	CalcularDeterminanteMatriz (ordemMatriz, matriz, &resultadoDeterminante);
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d12 6
+a17 3
+ * $Author$
+ * $Date$
+ * $Log$
+a75 6
+	if (NUMERO_MAXIMO_LINHAS != NUMERO_MAXIMO_COLUNAS)
+	{
+		printf("\n%sERRO: O numero de linhas esta diferente do numero de colunas! \nObs: Ordem Matriz = Numero Linhas = Numero Colunas %s\n\n", RED, RESET);	
+		exit (NUMERO_ARGUMENTOS_INVALIDO);
+	}
+
+d170 1
+d172 1
+a172 1
+	
+d175 1
+a175 1
+/* $RCSfile$ */
+@

@@ -1,0 +1,400 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2024.06.09.22.46.46;	author felipe.farias;	state Exp;
+branches;
+next	;
+
+
+desc
+@Tratamento de erros/main/chamada funcao MultiplicarMatrizes
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@
+/*******************************************************************************
+ *
+ * Universidade Federal do Rio de Janeiro
+ * Escola Politecnica
+ * Departamento de Eletronica e de Computacao
+ * EEL270 - Computacao II - Turma 2024/1
+ * Prof. Marcelo Luiz Drumond Lanza
+ * Autor: Felipe Vasconcellos Nunes Gurgel Farias
+ *
+ * Descricao: tratamento erros/ implementacao main/ chamada MultiplicarMatrizes
+ *
+ * $Author$
+ * $Date$
+ * $Log$
+ *
+ *******************************************************************************/
+#ifdef __linux__
+#define _XOPEN_SOURCE 600
+#endif
+
+#if defined (__FreeBSD__) && defined(__STRICT_ANSI__)
+#define __LONG_LONG_SUPPORTED
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
+#include <errno.h>
+#include <float.h>
+
+#include "cores.h"
+#include "aula0501.h"
+
+#define NUMERO_MINIMO_ARGUMENTOS			5
+#define NUMERO_ARGUMENTOS_INVALIDO			1
+
+#define NUMERO_LINHAS_NEGATIVO				2 
+#define NUMERO_LINHAS_ZERO				3
+#define NUMERO_LINHAS_ULTRAPASSADO			4
+#define CARACTER_LINHAS_INVALIDO			5
+#define NUMERO_COLUNAS_INVALIDO				6
+#define NUMERO_COLUNAS_NEGATIVO				7
+#define NUMERO_COLUNAS_ZERO				8
+#define NUMERO_COLUNAS_ULTRAPASSADO			9
+#define CARACTER_COLUNAS_INVALIDO			10
+#define BASE_DECIMAL					10
+#define NUMERO_INDICES_MATRIZ_INVALIDO			11
+#define TAMANHO_MAXIMO_UNSIGNED_SHORT_ULTRAPASSADO	12
+#define TAMANHO_MAXIMO_UNSIGNED_LONG_ULTRAPASSADO	13
+#define TAMANHO_MAXIMO_LONG_DOUBLE_ULTRAPASSADO		14
+#define TAMANHO_MINIMO_LONG_DOUBLE_INFERIOR		15
+#define CARACTER_INDICE_MATRIZES_INVALIDO		16
+
+
+#define END_OF_STRING					'\0'
+
+int
+main (int argc, char **argv)
+{	
+	
+	unsigned long long numeroArgumentosMatrizA, numeroArgumentosMatrizB, parametrosMatrizTerminal, parametroEsperado;
+	unsigned long int numeroLinhasAuxiliar, numeroColunasAuxiliar;
+
+	us primeiroNumeroLinhas, primeiroNumeroColunas, segundoNumeroLinhas, segundoNumeroColunas, indiceLinhas, indiceColunas, indiceArgumentoTerminal;
+ 	ld matrizA[NUMERO_MAXIMO_LINHAS][NUMERO_MAXIMO_COLUNAS], matrizB[NUMERO_MAXIMO_LINHAS][NUMERO_MAXIMO_COLUNAS], matrizProduto[NUMERO_MAXIMO_LINHAS][NUMERO_MAXIMO_COLUNAS], argumentoMatrizTerminal;
+	char *validacao;
+
+
+	/* NUMERO MINIMO DE ARGUMENTOS NO TERMINAL */
+
+	if (argc <= NUMERO_MINIMO_ARGUMENTOS)
+	{
+		printf("\n%sERRO: Numero de argumentos invalido! \nModelo de uso:<linhasA> <colunasA> <linhasB> <colunasB> <a11> .. <a1n> <a21> .. <a2n> <aX1> .. <aXn>. %s\n\n", RED, RESET);	
+		exit (NUMERO_ARGUMENTOS_INVALIDO);
+	}
+
+	/*VALIDACOES PARA A MATRIZ A */
+
+	/* linha A */
+
+	numeroLinhasAuxiliar = strtoul(argv[1], &validacao, BASE_DECIMAL);
+		
+	if (argv[1][0] == '-')
+	{
+		printf("\n%sERRO: O numero de linhas da matriz A nao pode ser negativo, retire o hifen '-' ! %s\n\n", RED, RESET);	
+		exit (NUMERO_LINHAS_NEGATIVO);
+	}		
+
+	if(errno == ERANGE)
+	{
+			
+		printf("\n%sERRO: Numero de linhas da matriz A ultrapassa o limite maximo de conversao unsigned long int para linhas (%lu)! %s\n\n", RED, ULONG_MAX, RESET);
+		exit (TAMANHO_MAXIMO_UNSIGNED_LONG_ULTRAPASSADO);
+	}
+
+	if(*validacao != END_OF_STRING)
+	{
+		printf("\n%sERRO: Caracteres especiais sao invalidos (linhaA)! Retire o (\'%c\')! %s\n\n", RED, *validacao, RESET);
+		exit (CARACTER_LINHAS_INVALIDO);
+	}
+
+	primeiroNumeroLinhas = (us) numeroLinhasAuxiliar;
+
+
+	if(numeroLinhasAuxiliar == 0)
+	{
+		printf("\n%sERRO: Numero linhas da matriz A deve ser maior do que zero! %s\n\n", RED, RESET);	
+		exit (NUMERO_LINHAS_ZERO);
+	}
+
+	if(numeroLinhasAuxiliar > NUMERO_MAXIMO_LINHAS && numeroLinhasAuxiliar < USHRT_MAX)
+	{	
+		printf("\n%sERRO: Numero linhas da matriz A nao pode ultrapassar o valor maximo de %u linhas! %s\n\n", RED, NUMERO_MAXIMO_LINHAS, RESET);	
+		exit (NUMERO_LINHAS_ULTRAPASSADO);
+	}
+
+	if(numeroLinhasAuxiliar > USHRT_MAX)
+	{
+		printf("\n%sERRO: Numero linhas da matriz A ultrapassa o limite maximo do tipo unsigned short (limite:%u)! %s\n\n", RED, USHRT_MAX, RESET);
+		exit (TAMANHO_MAXIMO_UNSIGNED_SHORT_ULTRAPASSADO);
+	}	
+
+	/* coluna A */
+
+	numeroColunasAuxiliar = strtoul(argv[2], &validacao, BASE_DECIMAL);
+
+	if (argv[2][0] == '-')
+	{
+		printf("\n%sERRO: O numero de colunas da matriz A nao pode ser negativo, retire o hifen '-' ! %s\n\n", RED, RESET);	
+		exit (NUMERO_COLUNAS_NEGATIVO);
+	}		
+
+	if(errno == ERANGE)
+	{
+			
+		printf("\n%sERRO: Numero de colunas da matriz A ultrapassa o limite maximo de conversao unsigned long int para colunas (%lu). %s\n\n", RED, ULONG_MAX, RESET);
+		exit (TAMANHO_MAXIMO_UNSIGNED_LONG_ULTRAPASSADO);
+
+	}
+	
+	if(*validacao != END_OF_STRING)
+	{
+		printf("\n%sERRO: Caracteres especiais sao invalidos (colunaA)! Retire o (\'%c\')! %s\n\n", RED, *validacao, RESET);
+		exit (CARACTER_COLUNAS_INVALIDO);
+	}
+
+	primeiroNumeroColunas = (us) numeroColunasAuxiliar;
+
+	if(numeroColunasAuxiliar == 0)
+	{
+		printf("\n%sERRO: Numero colunas da matriz A deve ser maior do que zero! %s\n\n", RED, RESET);	
+		exit (NUMERO_COLUNAS_ZERO);
+	}
+
+	if(numeroColunasAuxiliar > NUMERO_MAXIMO_COLUNAS && numeroColunasAuxiliar < USHRT_MAX)
+	{	
+		printf("\n%sERRO: Numero colunas da matriz A nao pode ultrapassar o valor maximo de %u colunas! %s\n\n", RED, NUMERO_MAXIMO_COLUNAS, RESET);	
+		exit (NUMERO_COLUNAS_ULTRAPASSADO);
+	}
+		
+	if(numeroColunasAuxiliar > USHRT_MAX)
+	{
+		printf("\n%sERRO: Numero colunas da matriz A ultrapassa o limite maximo do tipo unsigned short (limite:%u)! %s\n\n", RED, USHRT_MAX, RESET);
+		exit (TAMANHO_MAXIMO_UNSIGNED_SHORT_ULTRAPASSADO);
+	}	
+
+	/* indices da matriz A no terminal */
+
+	parametrosMatrizTerminal = argc - NUMERO_MINIMO_ARGUMENTOS;
+
+	numeroArgumentosMatrizA = primeiroNumeroLinhas * primeiroNumeroColunas;
+	
+	if(numeroArgumentosMatrizA > parametrosMatrizTerminal)
+	{
+		printf("\n%sERRO: LinhaA x ColunaA = (%llu) supera numero de argumentos inseridos no terminal (%llu)!%s\n\n", RED, numeroArgumentosMatrizA, parametrosMatrizTerminal, RESET);
+		exit (NUMERO_INDICES_MATRIZ_INVALIDO);
+	}
+
+	indiceArgumentoTerminal = NUMERO_MINIMO_ARGUMENTOS;
+
+
+	for(indiceLinhas = 0; indiceLinhas < primeiroNumeroLinhas; indiceLinhas++)
+	{
+		
+		for (indiceColunas = 0; indiceColunas < primeiroNumeroColunas; indiceColunas++)
+		{
+			argumentoMatrizTerminal = strtold (argv[indiceArgumentoTerminal], &validacao);
+		
+			if(errno == ERANGE && argumentoMatrizTerminal > 0)
+			{
+				printf("\n%sERRO: Algum indice da matriz A ultrapassa o limite maximo do tipo long double (%Lg)!%s\n\n", RED, LDBL_MAX, RESET);	
+				exit (TAMANHO_MAXIMO_LONG_DOUBLE_ULTRAPASSADO);
+			}
+
+			if(errno == ERANGE && argumentoMatrizTerminal < 0)
+			{
+				printf("\n%sERRO: Algum indice da matriz A ultrapassa o limite minimo do tipo long double (%Lg)!%s\n\n", RED, LDBL_MIN, RESET);	
+				exit (TAMANHO_MINIMO_LONG_DOUBLE_INFERIOR);
+			}
+
+			if(*validacao != END_OF_STRING)
+			{
+				printf("\n%sERRO: Algum argumento dos indices da matriz A esta com caractere invalido! Retire o (\'%c\'). %s\n\n", RED, *validacao, RESET);
+				exit (CARACTER_INDICE_MATRIZES_INVALIDO);
+			}
+	
+			matrizA [indiceLinhas][indiceColunas] = argumentoMatrizTerminal;
+			indiceArgumentoTerminal++;
+	
+		}
+	}
+
+	/* VALIDACOES PARA A MATRIZ B */
+
+	/* linha B */
+		
+	numeroLinhasAuxiliar = strtol(argv[3], &validacao, BASE_DECIMAL);
+
+	if (argv[3][0] == '-')
+	{
+		printf("\n%sERRO: O numero de linhas da matriz B nao pode ser negativo, retire o hifen '-' ! %s\n\n", RED, RESET);	
+		exit (NUMERO_LINHAS_NEGATIVO);
+	}		
+
+	if(errno == ERANGE)
+	{
+			
+		printf("\n%sERRO: Numero de linhas da matriz B ultrapassa o limite maximo de conversao unsigned long int para linhas (%lu). %s\n\n", RED, ULONG_MAX, RESET);
+		exit (TAMANHO_MAXIMO_UNSIGNED_LONG_ULTRAPASSADO);
+	}
+	
+	if(*validacao != END_OF_STRING)
+	{
+		printf("\n%sERRO: Caracteres especiais sao invalidos (linhaB)! Retire o (\'%c\')! %s\n\n", RED, *validacao, RESET);
+		exit (CARACTER_LINHAS_INVALIDO);
+	}
+
+	segundoNumeroLinhas = (us) numeroLinhasAuxiliar;
+
+
+	if(numeroLinhasAuxiliar == 0)
+	{
+		printf("\n%sERRO: Numero linhas da matriz B deve ser maior do que zero! %s\n\n", RED, RESET);	
+		exit (NUMERO_LINHAS_ZERO);
+	}
+
+	if(numeroLinhasAuxiliar > NUMERO_MAXIMO_LINHAS && numeroLinhasAuxiliar < USHRT_MAX)
+	{	
+		printf("\n%sERRO: Numero linhas da matriz B nao pode ultrapassar o valor maximo de %u linhas! %s\n\n", RED, NUMERO_MAXIMO_LINHAS, RESET);	
+		exit (NUMERO_LINHAS_ULTRAPASSADO);
+	}
+
+	if(numeroLinhasAuxiliar > USHRT_MAX)
+	{	
+		printf("\n%sERRO: Numero linhas da matriz B nao pode ultrapassar o limite maximo do tipo unsigned short (%u)! %s\n\n", RED, USHRT_MAX, RESET);	
+		exit (TAMANHO_MAXIMO_UNSIGNED_SHORT_ULTRAPASSADO);
+	}
+
+	/* coluna B */
+
+	numeroColunasAuxiliar = strtoul(argv[4], &validacao, BASE_DECIMAL);
+
+	if (argv[4][0] == '-')
+	{
+		printf("\n%sERRO: O numero de colunas da matriz B nao pode ser negativo, retire o hifen '-' ! %s\n\n", RED, RESET);	
+		exit (NUMERO_COLUNAS_NEGATIVO);
+	}		
+
+	if(errno == ERANGE)
+	{
+			
+		printf("\n%sERRO: Numero de colunas da matriz B ultrapassa o limite maximo de conversao unsigned long int para colunas (%lu). %s\n\n", RED, ULONG_MAX, RESET);
+		exit (TAMANHO_MAXIMO_UNSIGNED_LONG_ULTRAPASSADO);
+
+	}
+
+	if(*validacao != END_OF_STRING)
+	{
+		printf("\n%sERRO: Caracteres especiais sao invalidos (colunaB)! Retire o (\'%c\')! %s\n\n", RED, *validacao, RESET);
+		exit (CARACTER_COLUNAS_INVALIDO);
+	}
+
+
+	segundoNumeroColunas = (us) numeroColunasAuxiliar;
+
+	
+	if(numeroColunasAuxiliar == 0)
+	{
+		printf("\n%sERRO: Numero colunas da matriz B deve ser maior do que zero! %s\n\n", RED, RESET);	
+		exit (NUMERO_COLUNAS_ZERO);
+	}
+
+	if(numeroColunasAuxiliar > NUMERO_MAXIMO_COLUNAS && numeroColunasAuxiliar < USHRT_MAX)
+	{	
+		printf("\n%sERRO: Numero linhas da matriz B nao pode ultrapassar o valor maximo de %u linhas! %s\n\n", RED, NUMERO_MAXIMO_LINHAS, RESET);	
+		exit (NUMERO_COLUNAS_ULTRAPASSADO);
+	}
+
+	if(numeroColunasAuxiliar > USHRT_MAX)
+	{	
+		printf("\n%sERRO: Numero linhas da matriz B nao pode ultrapassar o valor maximo de %u linhas! %s\n\n", RED, USHRT_MAX, RESET);	
+		exit (TAMANHO_MAXIMO_UNSIGNED_SHORT_ULTRAPASSADO);
+	}
+
+
+	/* indices da matriz B no terminal */
+
+	numeroArgumentosMatrizB = segundoNumeroLinhas * segundoNumeroColunas;
+
+	if(numeroArgumentosMatrizB > parametrosMatrizTerminal)
+	{
+		printf("\n%sERRO: LinhaB x ColunaB = (%llu) supera numero de argumentos inseridos no terminal (%llu)!%s\n\n", RED, numeroArgumentosMatrizB, parametrosMatrizTerminal, RESET);
+		exit (NUMERO_INDICES_MATRIZ_INVALIDO);
+	}
+
+
+	/* indices da matriz A e B comparado aos indices */
+
+	parametroEsperado = numeroArgumentosMatrizA + numeroArgumentosMatrizB;
+
+	if(parametroEsperado != parametrosMatrizTerminal)
+	{
+	printf("\n%sERRO: O total de indices inseridos no terminal (%llu) nao esta de acordo com a soma do produto das linhas e colunas das matrizes (%llu)! %s\n\n", RED, parametrosMatrizTerminal, parametroEsperado, RESET);
+		exit (NUMERO_INDICES_MATRIZ_INVALIDO);
+	}
+
+
+	for (indiceLinhas = 0; indiceLinhas < segundoNumeroLinhas; indiceLinhas++)
+	{
+		for(indiceColunas = 0; indiceColunas < segundoNumeroColunas; indiceColunas++)
+		{
+			argumentoMatrizTerminal = strtold (argv[indiceArgumentoTerminal], &validacao);
+
+			if(errno == ERANGE && argumentoMatrizTerminal > 0)
+			{
+				printf("\n%sERRO: Algum indice da matriz B ultrapassa o limite maximo do tipo long double (%Lg)! %s\n\n", RED, LDBL_MAX, RESET);	
+				exit (TAMANHO_MAXIMO_LONG_DOUBLE_ULTRAPASSADO);
+			}
+	
+			if(errno == ERANGE && argumentoMatrizTerminal < 0)
+			{
+				printf("\n%sERRO: Algum indice da matriz B ultrapassa o limite minimo do tipo long double (%Lg)! %s\n\n", RED, LDBL_MIN, RESET);	
+				exit (TAMANHO_MINIMO_LONG_DOUBLE_INFERIOR);
+			}
+
+	
+			if(*validacao != END_OF_STRING)
+			{
+				printf("\n%sERRO: Algum argumento dos indices da matriz B esta com caractere invalido! Retire o (\'%c\'). %s\n\n", RED, *validacao, RESET);
+				exit (CARACTER_INDICE_MATRIZES_INVALIDO);
+			}
+			
+			matrizB[indiceLinhas][indiceColunas] = argumentoMatrizTerminal;
+			indiceArgumentoTerminal++;	
+		
+		}
+
+	}
+
+	MultiplicarMatrizes (primeiroNumeroLinhas, primeiroNumeroColunas, segundoNumeroLinhas, segundoNumeroColunas, matrizA, matrizB, matrizProduto);
+
+
+	printf("%sMatriz A:%s\n", GREEN, RESET);
+	ExibirMatriz (primeiroNumeroLinhas, primeiroNumeroColunas, matrizA);
+
+	printf("%sMatriz B:%s\n", GREEN, RESET);
+	ExibirMatriz (segundoNumeroLinhas, segundoNumeroColunas, matrizB);	
+	
+	printf("%sMatriz Produto:%s\n", GREEN, RESET);
+	ExibirMatriz (primeiroNumeroLinhas, segundoNumeroColunas, matrizProduto);
+	
+	return OK;
+}
+/* $RCSfile$ */
+@

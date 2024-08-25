@@ -1,0 +1,62 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2024.05.04.16.52.42;	author felipe.farias;	state Exp;
+branches;
+next	;
+
+
+desc
+@Implementacao da funcao Calcu√√larMaximoDivisorComum recursivo
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@/*******************************************************************************
+ *
+ * Universidade Federal do Rio de Janeiro
+ * Escola Politecnica
+ * Departamento de Eletronica e de Computacao
+ * EEL270 - Computacao II - Turma 2024/1
+ * Prof. Marcelo Luiz Drumond Lanza
+ * Autor: Felipe Vasconcellos Nunes Gurgel Farias
+ *
+ * Descricao: Implementacao da funcao CalcularMaximoDivisorComum com recursividade
+ *
+ * $Author$
+ * $Date$
+ * $Log$
+ *
+ *******************************************************************************/
+
+#include <stdio.h>
+
+#include "aula0201.h"
+
+#define VALOR_ZERO	0
+
+
+ull
+CalcularMaximoDivisorComum (ull primeiroNumero, ull segundoNumero)
+{
+
+	if (segundoNumero == VALOR_ZERO)
+	{
+		return primeiroNumero;
+	}
+	
+	return CalcularMaximoDivisorComum (segundoNumero, primeiroNumero % segundoNumero);
+
+}
+
+/* $RCSfile$ */
+@

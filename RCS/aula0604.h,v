@@ -1,0 +1,65 @@
+head	1.1;
+access;
+symbols;
+locks
+	felipe.farias:1.1; strict;
+comment	@ * @;
+
+
+1.1
+date	2024.07.24.00.28.22;	author felipe.farias;	state Exp;
+branches;
+next	;
+
+
+desc
+@prototipo da funcao rg utilizando string
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@/*******************************************************************************
+ *
+ * Universidade Federal do Rio de Janeiro
+ * Escola Politecnica
+ * Departamento de Eletronica e de Computacao
+ * EEL270 - Computacao II - Turma 2024/1
+ * Prof. Marcelo Luiz Drumond Lanza
+ * Autor: Felipe Vasconcellos Nunes Gurgel Farias
+ *
+ * Descricao: prototipo das funcoes alterados de bytes para string
+ *
+ * $Author$
+ * $Date$
+ * $Log$
+ *
+ *******************************************************************************/
+#ifndef _AULA0604_
+#define _AULA0604_		"@@(#)aula0604.h $Revision$"
+
+#define COMPRIMENTO_RG		8
+#define DIGITO_VERIFICADOR	1
+
+typedef unsigned char byte;
+typedef unsigned short us;
+typedef enum {sucesso, argumentoRgInvalido, comprimentoRgInvalido, gerarDigitoVerificadorInvalido}
+
+tipoErros;
+
+
+tipoErros
+GerarDigitosVerificadoresRg (char * /*entrada*/, char * /*saida*/);
+
+
+
+tipoErros
+ValidarRg (char *);
+
+#endif
+
+/* $RCSfile$ */
+@

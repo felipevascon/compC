@@ -1,0 +1,66 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2024.05.13.00.22.27;	author felipe.farias;	state Exp;
+branches;
+next	;
+
+
+desc
+@Implementacao da funcao CalcularTermoSerieFibonacci usando while
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@
+/*******************************************************************************
+ *
+ * Universidade Federal do Rio de Janeiro
+ * Escola Politecnica
+ * Departamento de Eletronica e de Computacao
+ * EEL270 - Computacao II - Turma 2024/1
+ * Prof. Marcelo Luiz Drumond Lanza
+ * Autor: Felipe Vasconcellos Nunes Gurgel Farias
+ *
+ * Descricao: Codigo fonte da funcao CalcularTermoSerieFibonacci com while
+ *
+ * $Author$
+ * $Date$
+ * $Log$
+ *
+ *******************************************************************************/
+#include "aula0301.h"
+
+ull CalcularTermoSerieFibonacci (us numeroTermos)
+{
+	ull termoSeguinte;
+	ull termoAuxiliarUm = 0;
+	ull termoAuxiliarDois = 1;
+	
+	us contador = 1;
+
+	if (numeroTermos <= 1)
+	{
+		return numeroTermos;
+	}
+	
+	while (contador < numeroTermos)
+	{
+		termoSeguinte = termoAuxiliarUm + termoAuxiliarDois;
+		termoAuxiliarUm = termoAuxiliarDois;
+		termoAuxiliarDois = termoSeguinte;
+		contador++;
+	}
+	return termoSeguinte;
+}
+/* $RCSfile$ */
+@
